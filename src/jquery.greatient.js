@@ -53,7 +53,6 @@
 
     /* Animates the first color in the gradient  */
     $.fx.step.gradientFrom = function(fx) {
-        var rgb, str, i;
         if (fx.state === 0) {
             convertColors(fx, 0);
         }
