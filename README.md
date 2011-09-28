@@ -12,4 +12,4 @@
 2. The original CSS cannot use color names - you need to provide either RGB or Hex color values.  Color names can be supplied to the animation, however.
 3. Untested in IE.  Some accomodations have been made for it, however.
 4. Colors are the only gradient component that can be animated.
-5. Only animates the first two colors in a gradient.
+5. Only animates the first and last colors in a gradient.
