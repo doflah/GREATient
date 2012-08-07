@@ -42,4 +42,13 @@
             "gradientTo": colors.reverse()[0]
         }, 1000);
     });
+
+    //Parse color names in the original CSS declaration!
+    var colors2 = ["purple", "green"];
+    $("#cssColorName").click(function() {
+        $(this).animate({
+            "gradientFrom": colors2[0],
+            "gradientTo": colors2.reverse()[0]
+        }, 1000);
+    });
 })(jQuery);

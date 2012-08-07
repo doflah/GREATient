@@ -20,6 +20,8 @@
             lime: "#00ff00", magenta: "#ff00ff", maroon: "#800000", navy: "#000080", olive: "#808000", orange: "#ffa500", pink: "#ffc0cb", purple: "#800080", violet: "#800080",
             red: "#ff0000", silver: "#c0c0c0", white: "#ffffff", yellow: "#ffff00"},
 
+        expression = new RegExp("("+Object.keys(colors).join("|") + ")", "gi"),
+
     /* pos is between 0 and 1, start and end are arrays of [r,g,b] values.  Returns an rgb formatted color */
         getPartialColor = function (pos, start, end) {
             return "rgb(" + [
@@ -31,10 +33,11 @@
 
     /* Parse the provided colors and convert into numbers for calculation */
         convertColors = function (fx, index) {
-            var str, rgb;
-            str = $(fx.elem).css(gradientProp);
-            rgb = (str.match(/(rgb\(.+?\))/g) || str.match(/(#[0-9a-f]{6})/g))[index]();
-            if (rgb[0] === "#") {
+            var str = $(fx.elem).css(gradientProp).replace(expression, function(i) {
+                    return colors[i.toLowerCase()]; //replace any color names
+                }), rgb = (str.match(/(rgb\(.+?\))/g) || str.match(/(#[0-9a-f]{6})/g))[index]();
+                $(fx.elem).css(gradientProp, str);
+            if (rgb.charAt(0) === "#") {
                 fx.start = [parseInt(rgb.substring(1, 3), 16), parseInt(rgb.substring(3, 5), 16), parseInt(rgb.substring(5, 7), 16)];
                 fx.format = /(#[0-9a-f]{6})/;
             } else {
@@ -43,7 +46,7 @@
                 fx.format = /(rgb\(.+?\))/;
             }
             rgb = colors[fx.end] || fx.end;
-            if (rgb[0] === "#") {
+            if (rgb.charAt(0) === "#") {
                 fx.end = [parseInt(rgb.substring(1, 3), 16), parseInt(rgb.substring(3, 5), 16), parseInt(rgb.substring(5, 7), 16)];
             } else {
                 rgb = rgb.match(/\d+/g);

@@ -4,7 +4,7 @@ div {
     display: inline-block;
 }
 
-/* Colors specified can be in RGB or Hex, but not by name */
+/* Colors specified can be in RGB, Hex, or by name */
 #hover {
     background-image: -webkit-radial-gradient(50% 50%, cover, rgb(255, 255, 255) 0%, rgb(0, 0, 0) 75%);
     background-image:    -moz-radial-gradient(50% 50%, cover, rgb(255, 255, 255) 0%, rgb(0, 0, 0) 75%);
@@ -31,4 +31,13 @@ div {
     background-image:     -ms-linear-gradient(top, #00FF00, #0000FF); 
     background-image:      -o-linear-gradient(top, #00FF00, #0000FF); 
     background-image:         linear-gradient(top, #00FF00, #0000FF); 
+}
+
+#cssColorName {
+    background-image: -webkit-gradient(linear, left top, right top, from(green), to(purple)); 
+    background-image: -webkit-linear-gradient(left, green, purple); 
+    background-image:    -moz-linear-gradient(left, green, purple);
+    background-image:     -ms-linear-gradient(left, green, purple); 
+    background-image:      -o-linear-gradient(left, green, purple); 
+    background-image:         linear-gradient(left, green, purple); 
 }
