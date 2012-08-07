@@ -9,7 +9,7 @@
 
 (function ($) {
 
-    /* Handle IE.  Everyone else uses backgroundImage but IE uses filter.  Untested. */
+    /* Everyone else uses backgroundImage but IE uses filter. */
     var gradientProp = $.browser.msie ? "filter" : "backgroundImage",
 
     /* List of color names, borrowed from the jQuery color plugin */
@@ -49,44 +49,34 @@
                 rgb = rgb.match(/\d+/g);
                 fx.end = [parseInt(rgb[0], 10), parseInt(rgb[1], 10), parseInt(rgb[2], 10)];
             }
+        },
+
+    /* Generic function for animating the first (flag == true) or last (flag == false) color */
+        animateGradient = function(flag) {
+            return function(fx) {
+                var tokens, len, counter, index, str;
+                if (fx.state === 0) {
+                    convertColors(fx, flag?"shift":"pop");
+                    tokens = $(fx.elem).css(gradientProp).split(fx.format);
+                    for (counter = 0, len = tokens.length; counter < len; counter++) {
+                        index = flag?counter:len-counter-1;
+                        str = tokens[index];
+                        if (str.substring(0, 4) === "rgb(" || str.charAt(0) === "#") {
+                            fx.index = index;
+                            break;
+                        }
+                    }
+                } else {
+                    tokens = $(fx.elem).css(gradientProp).split(fx.format);
+                    tokens[fx.index] = getPartialColor(fx.pos, fx.start, fx.end);
+                    fx.elem.style[gradientProp] = tokens.join("");
+                }
+            };
         };
 
     /* Animates the first color in the gradient  */
-    $.fx.step.gradientFrom = function (fx) {
-        var str, i;
-        if (fx.state === 0) {
-            convertColors(fx, "shift");
-            str = $(fx.elem).css(gradientProp).split(fx.format);
-            for (i = 0; i < str.length; i++) {
-                if (str[i].substring(0, 4) === "rgb(" || str[i].substring(0, 1) === "#") {
-                    fx.index = i;
-                    break;
-                }
-            }
-        } else {
-            str = $(fx.elem).css(gradientProp).split(fx.format);
-            str[fx.index] = getPartialColor(fx.pos, fx.start, fx.end);
-            fx.elem.style[gradientProp] = str.join("");
-        }
-    };
+    $.fx.step.gradientFrom = animateGradient(true);
 
     /* Animates the second color in the gradient  */
-    $.fx.step.gradientTo = function (fx) {
-        var str, i;
-        if (fx.state === 0) {
-            convertColors(fx, "pop");
-            str = $(fx.elem).css(gradientProp).split(fx.format);
-            i = str.length;
-            while (i--) {
-                if (str[i].substring(0, 4) === "rgb(" || str[i].substring(0, 1) === "#") {
-                    fx.index = i;
-                    break;
-                }
-            }
-        } else {
-            str = $(fx.elem).css(gradientProp).split(fx.format);
-            str[fx.index] = getPartialColor(fx.pos, fx.start, fx.end);
-            fx.elem.style[gradientProp] = str.join("");
-        }
-    };
+    $.fx.step.gradientTo = animateGradient(false);
 }(jQuery));
