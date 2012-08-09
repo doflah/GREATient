@@ -20,7 +20,9 @@
             lime: "#00ff00", magenta: "#ff00ff", maroon: "#800000", navy: "#000080", olive: "#808000", orange: "#ffa500", pink: "#ffc0cb", purple: "#800080", violet: "#800080",
             red: "#ff0000", silver: "#c0c0c0", white: "#ffffff", yellow: "#ffff00"},
 
-        expression = new RegExp("("+Object.keys(colors).join("|") + ")", "gi"),
+        colorRegex = new RegExp("("+Object.keys(colors).join("|") + ")", "gi"),
+
+        replaceCallback = function (token) { return colors[token.toLowerCase()]; },
 
     /* pos is between 0 and 1, start and end are arrays of [r,g,b] values.  Returns an rgb formatted color */
         getPartialColor = function (pos, start, end) {
@@ -31,27 +33,27 @@
             ].join(",") + ")";
         },
 
+        parseColor = function(color) {
+            if (color.charAt(0) === "#") {  // #RRGGBB
+                return [parseInt(color.substr(1, 2), 16), parseInt(color.substr(3, 2), 16), parseInt(color.substr(5, 2), 16)];
+            } else { // rgb( rrr, ggg, bbb);
+                color = color.match(/\d+/g);
+                return [parseInt(color[0], 10), parseInt(color[1], 10), parseInt(color[2], 10)];
+            }
+        },
+
     /* Parse the provided colors and convert into numbers for calculation */
         convertColors = function (fx, index) {
-            var str = $(fx.elem).css(gradientProp).replace(expression, function(i) {
-                    return colors[i.toLowerCase()]; //replace any color names
-                }), rgb = (str.match(/(rgb\(.+?\))/g) || str.match(/(#[0-9a-f]{6})/g))[index]();
-                $(fx.elem).css(gradientProp, str);
+            var str = $(fx.elem).css(gradientProp).replace(colorRegex, replaceCallback),
+                       rgb = (str.match(/(rgb\(.+?\))/g) || str.match(/(#[0-9a-f]{6})/g))[index]();
+            $(fx.elem).css(gradientProp, str);
             if (rgb.charAt(0) === "#") {
-                fx.start = [parseInt(rgb.substring(1, 3), 16), parseInt(rgb.substring(3, 5), 16), parseInt(rgb.substring(5, 7), 16)];
                 fx.format = /(#[0-9a-f]{6})/;
             } else {
-                rgb = rgb.match(/\d+/g);
-                fx.start = [parseInt(rgb[0], 10), parseInt(rgb[1], 10), parseInt(rgb[2], 10)];
                 fx.format = /(rgb\(.+?\))/;
             }
-            rgb = colors[fx.end] || fx.end;
-            if (rgb.charAt(0) === "#") {
-                fx.end = [parseInt(rgb.substring(1, 3), 16), parseInt(rgb.substring(3, 5), 16), parseInt(rgb.substring(5, 7), 16)];
-            } else {
-                rgb = rgb.match(/\d+/g);
-                fx.end = [parseInt(rgb[0], 10), parseInt(rgb[1], 10), parseInt(rgb[2], 10)];
-            }
+            fx.start = parseColor(rgb);
+            fx.end = parseColor(colors[fx.end] || fx.end);
         },
 
     /* Generic function for animating the first (flag == true) or last (flag == false) color */
@@ -62,9 +64,9 @@
                     convertColors(fx, flag?"shift":"pop");
                     tokens = $(fx.elem).css(gradientProp).split(fx.format);
                     for (counter = 0, len = tokens.length; counter < len; counter++) {
-                        index = flag?counter:len-counter-1;
+                        index = flag?counter:len-counter-1; //offset from either end
                         str = tokens[index];
-                        if (str.substring(0, 4) === "rgb(" || str.charAt(0) === "#") {
+                        if (str.substr(0, 4) === "rgb(" || str.charAt(0) === "#") {
                             fx.index = index;
                             break;
                         }
