@@ -20,7 +20,11 @@
             lime: "#00ff00", magenta: "#ff00ff", maroon: "#800000", navy: "#000080", olive: "#808000", orange: "#ffa500", pink: "#ffc0cb", purple: "#800080", violet: "#800080",
             red: "#ff0000", silver: "#c0c0c0", white: "#ffffff", yellow: "#ffff00"},
 
-        colorRegex = new RegExp("("+Object.keys(colors).join("|") + ")", "gi"),
+        regex = {
+            colorNames: new RegExp("("+Object.keys(colors).join("|") + ")", "gi"),
+            rgb: /(rgb\(.+?\))/g,
+            hex:/(#[0-9a-f]{6})/g,
+        },
 
         replaceCallback = function (token) { return colors[token.toLowerCase()]; },
 
@@ -43,15 +47,11 @@
         },
 
     /* Parse the provided colors and convert into numbers for calculation */
-        convertColors = function (fx, index) {
-            var str = $(fx.elem).css(gradientProp).replace(colorRegex, replaceCallback),
-                       rgb = (str.match(/(rgb\(.+?\))/g) || str.match(/(#[0-9a-f]{6})/g))[index]();
-            $(fx.elem).css(gradientProp, str);
-            if (rgb.charAt(0) === "#") {
-                fx.format = /(#[0-9a-f]{6})/;
-            } else {
-                fx.format = /(rgb\(.+?\))/;
-            }
+        convertColors = function (fx, end) {
+            var str = $(fx.elem).css(gradientProp).replace(regex.colorNames, replaceCallback),
+                       rgb = (str.match(regex.rgb) || str.match(regex.hex))[end?"shift":"pop"]();
+            fx.elem.style[gradientProp] = str;
+            fx.format = rgb.charAt(0) === "#" ? regex.hex:regex.rgb;
             fx.start = parseColor(rgb);
             fx.end = parseColor(colors[fx.end] || fx.end);
         },
@@ -61,7 +61,7 @@
             return function(fx) {
                 var tokens, len, counter, index, str;
                 if (fx.state === 0) {
-                    convertColors(fx, flag?"shift":"pop");
+                    convertColors(fx, flag);
                     tokens = $(fx.elem).css(gradientProp).split(fx.format);
                     for (counter = 0, len = tokens.length; counter < len; counter++) {
                         index = flag?counter:len-counter-1; //offset from either end
