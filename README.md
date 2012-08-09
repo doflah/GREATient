@@ -9,7 +9,7 @@
 
 ## Known issues ##
 1. Great is probably an overstatement.
-2. The original CSS cannot use color names - you need to provide either RGB or Hex color values.  Color names can be supplied to the animation, however.
-3. Untested in IE.  Some accomodations have been made for it, however.
+~~2. The original CSS cannot use color names - you need to provide either RGB or Hex color values.  Color names can be supplied to the animation, however.~~
+3. Does not support Internet Explorer.
 4. Colors are the only gradient component that can be animated.
 5. Only animates the first and last colors in a gradient.
