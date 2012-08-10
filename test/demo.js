@@ -51,4 +51,12 @@
             "gradientTo": colors2.reverse()[0]
         }, 1000);
     });
+
+    var rgba = ["rgba(0, 255, 0, .1)", "rgba(0, 255, 0, .9)"];
+    $("#rgba").click(function() {
+        $(this).animate({
+            "gradientFrom": rgba[0],
+            "gradientTo": rgba.reverse()[0]
+        }, 1000);
+    });
 })(jQuery);
