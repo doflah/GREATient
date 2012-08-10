@@ -34,13 +34,13 @@
             return "rgb(" + [parseInt(hex.substr(1, 2), 16), parseInt(hex.substr(3, 2), 16), parseInt(hex.substr(5, 2), 16)].join(",") + ")";
         },
 
-    /* pos is between 0 and 1, start and end are arrays of [r,g,b] values.  Returns an rgb formatted color */
+    /* pos is between 0 and 1, start and end are arrays of [r,g,b,a] values.  Returns an rgba formatted color */
         getPartialColor = function (pos, start, end) {
             return "rgba(" + [
-                Math.max(Math.min(parseInt((pos * (end[0] - start[0])) + start[0], 10), 255), 0),
-                Math.max(Math.min(parseInt((pos * (end[1] - start[1])) + start[1], 10), 255), 0),
-                Math.max(Math.min(parseInt((pos * (end[2] - start[2])) + start[2], 10), 255), 0),
-                Math.max(Math.min(parseFloat((pos * (end[3] - start[3])) + start[3], 10), 1), 0),
+                Math.round(start[0] + pos * (end[0] - start[0])),
+                Math.round(start[1] + pos * (end[1] - start[1])),
+                Math.round(start[2] + pos * (end[2] - start[2])),
+                start[3] + pos * (end[3] - start[3]),
             ].join(",") + ")";
         },
 
