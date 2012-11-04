@@ -68,7 +68,7 @@
     function animateGradient(flag) {
         return function (fx) {
             var tokens, len, counter, index;
-            if (fx.state === 0) {
+            if (fx.pos === 0) {
                 convertColors(fx, flag);
                 tokens = $(fx.elem).css(gradientProp).split(fx.format);
                 for (counter = 0, len = tokens.length - 1; counter <= len; counter += 1) {
